@@ -1,0 +1,24 @@
+--- a/traintest.py
++++ b/traintest.py
+@@ -24,12 +24,17 @@
+ def get_gpu_ids(i):
+     gpu_ids = []
+     gpu_info = os.popen("nvidia-smi -L").readlines()
+     for line in gpu_info:
+-        # print(line)
+         ids = line.split("UUID: ")[-1].strip(" ()\n")
+-        if ids.startswith("GPU"):
+-            continue
+-        gpu_ids.append(ids)
++        # Typical nvidia-smi output is "... (UUID: GPU-...)". The original
++        # code discarded every valid UUID because it starts with "GPU".
++        if line.startswith("GPU ") and ids:
++            gpu_ids.append(ids)
++    if not gpu_ids:
++        raise RuntimeError(
++            "No NVIDIA GPU UUID was parsed from `nvidia-smi -L`; "
++            "check NVIDIA driver visibility before training."
++        )
+     if i >= len(gpu_ids):
+         print("The number of the gpu is not enough! using the 0 by default")
+         return gpu_ids[0]
