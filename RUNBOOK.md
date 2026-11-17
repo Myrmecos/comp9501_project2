@@ -219,3 +219,18 @@ git push origin HEAD
 ```
 
 Keep the original TAPOR source and its MIT attribution intact. Record any compatibility patch application in the experiment summary.
+
+
+
+
+PhyPose-Early
+Physics attribute maps stacked as multi-channel input to pose encoding & retrieval
+Physics fused into pose pipeline early
+PhyPose-Trunk
+Shared trunk features as physics and pose branches input
+Physics fused into pose pipeline at trunk
+PhyPose-Late
+Parallel physics and pose paths; Late gated residual fusion on joints
+Physics fused into pose pipeline late
+PhyPose-Map
+Build spatial feature map from physics maps; joint queries the map

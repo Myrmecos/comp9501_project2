@@ -110,8 +110,9 @@ def main():
 
     num_history = int(cfg.get("num_history", 0)) if args.model == "vanilla" else 0
     require_heatmap = args.model == "hand3d"
-    # full_split already enumerates frames — do not subsample
-    max_frames = None if "full_split" in str(args.split_json) else 80
+    # full / noleak splits already enumerate frames — do not subsample
+    sj = str(args.split_json)
+    max_frames = None if ("full_split" in sj or "noleak" in sj) else 80
 
     log_dir = Path("log/tb") / args.exp_id
     weight_dir = Path("weights") / args.exp_id
@@ -161,6 +162,7 @@ def main():
         spatial_ch=int(cfg.get("spatial_ch", 128)),
         kp_dim=int(cfg.get("kp_dim", 96)),
         inverse_base=int(cfg.get("inverse_base", 64)),
+        use_forward=bool(cfg.get("use_forward", True)),
     ).float().to(device)
     has_physics = bool(getattr(model, "has_physics", args.model not in ("vanilla", "mediapipe", "nanotapor", "hand3d")))
 

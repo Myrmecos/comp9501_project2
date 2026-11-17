@@ -14,12 +14,20 @@ class HybridD(nn.Module):
     has_physics = True
 
     def __init__(
-        self, in_ch=1, spatial_ch=128, kp_dim=96, inverse_base=64, detach_physics_for_pose=True, **_kwargs
+        self,
+        in_ch=1,
+        spatial_ch=128,
+        kp_dim=96,
+        inverse_base=64,
+        detach_physics_for_pose=True,
+        use_forward=True,
+        **_kwargs,
     ):
         super().__init__()
         self.detach_physics_for_pose = bool(detach_physics_for_pose)
+        self.use_forward = bool(use_forward)
         self.inverse = InverseUNet(in_ch=in_ch, base=inverse_base, out_ch=5)
-        self.forward_model = ForwardThermal()
+        self.forward_model = ForwardThermal() if self.use_forward else None
         self.spatial_builder = nn.Sequential(
             ConvBNReLU(5, 64),
             ResidualConv(64),
@@ -34,9 +42,11 @@ class HybridD(nn.Module):
     def forward(self, thermal, ambient):
         thermal_n = ambient_normalize(thermal, ambient)
         prim = self.inverse(thermal_n)
-        t_recon = self.forward_model(
-            prim["depth"], prim["emissivity"], prim["surface_temp"], prim["reflection"], ambient
-        )
+        t_recon = None
+        if self.forward_model is not None:
+            t_recon = self.forward_model(
+                prim["depth"], prim["emissivity"], prim["surface_temp"], prim["reflection"], ambient
+            )
         mask = torch.sigmoid(prim["mask_logits"])
         d = maybe_detach(prim["depth"], self.detach_physics_for_pose)
         e = maybe_detach(prim["emissivity"], self.detach_physics_for_pose)

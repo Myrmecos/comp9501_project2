@@ -30,6 +30,7 @@ from utils import TaporSmallDataset, collate_batch
 
 EXPS = [
     ("hand3d", "hand3d_full"),
+    ("hand3d", "hand3d_noleak"),
     ("mediapipe", "mediapipe_full"),
     ("nanotapor", "nanotapor_full"),
     ("vanilla", "vanilla_full"),
@@ -202,12 +203,12 @@ def main():
         "--only",
         nargs="*",
         default=None,
-        help="Optional model names to evaluate (e.g. A B C D). Others kept from existing JSON if --merge.",
+        help="Optional model and/or exp ids (e.g. A hand3d_noleak). Others kept if --merge.",
     )
     ap.add_argument(
         "--merge",
         action="store_true",
-        help="Merge evaluated rows into existing log/official_test_results.json by model name.",
+        help="Merge evaluated rows into existing log/official_test_results.json by exp id.",
     )
     args = ap.parse_args()
 
@@ -215,24 +216,25 @@ def main():
         raise SystemExit(f"Missing {args.split_json}; run scripts/make_official_test_split.py first")
 
     out_json = Path("log/official_test_results.json")
-    existing = {}
+    existing: dict[str, dict] = {}
     if args.merge and out_json.exists():
         for row in json.loads(out_json.read_text()):
-            existing[row.get("model")] = row
+            key = row.get("exp") or row.get("model")
+            existing[key] = row
 
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
     only = set(args.only) if args.only else None
-    results_by_model: dict[str, dict] = dict(existing) if args.merge else {}
+    results_by_exp: dict[str, dict] = dict(existing) if args.merge else {}
 
     for model_name, exp in EXPS:
-        if only is not None and model_name not in only:
-            if model_name not in results_by_model:
-                results_by_model[model_name] = {"model": model_name, "exp": exp, "status": "skipped"}
+        if only is not None and model_name not in only and exp not in only:
+            if exp not in results_by_exp:
+                results_by_exp[exp] = {"model": model_name, "exp": exp, "status": "skipped"}
             continue
         ckpt = Path("weights") / exp / "best.pt"
         if not ckpt.exists():
             print(f"[skip] {exp}: no best.pt")
-            results_by_model[model_name] = {"model": model_name, "exp": exp, "status": "missing"}
+            results_by_exp[exp] = {"model": model_name, "exp": exp, "status": "missing"}
             continue
         print(f"[eval] {exp} ...", flush=True)
         # hand3d heatmaps are memory-heavy; smaller batch
@@ -242,7 +244,7 @@ def main():
         try:
             metrics = eval_ckpt(model_name, ckpt, args.split_json, device, batch_size=bs)
             metrics.update({"model": model_name, "exp": exp, "status": "ok"})
-            results_by_model[model_name] = metrics
+            results_by_exp[exp] = metrics
             print(
                 f"  test_mpjpe={metrics['test_mpjpe_cm']:.3f} cm "
                 f"(median {metrics['test_mpjpe_median_cm']:.3f}) "
@@ -256,11 +258,15 @@ def main():
             torch.cuda.empty_cache()
         except Exception as e:
             print(f"  FAILED: {e}", flush=True)
-            results_by_model[model_name] = {"model": model_name, "exp": exp, "status": f"error: {e}"}
+            results_by_exp[exp] = {"model": model_name, "exp": exp, "status": f"error: {e}"}
             torch.cuda.empty_cache()
 
     # preserve EXPS order
-    results = [results_by_model.get(m, {"model": m, "exp": e, "status": "missing"}) for m, e in EXPS]
+    results = [results_by_exp.get(e, {"model": m, "exp": e, "status": "missing"}) for m, e in EXPS]
+    # keep any merged extras not in EXPS
+    for k, v in results_by_exp.items():
+        if k not in {e for _, e in EXPS}:
+            results.append(v)
     out_json.write_text(json.dumps(results, indent=2))
     write_markdown(results, args.split_json, args.out, out_json)
     print(args.out.read_text())

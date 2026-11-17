@@ -2,6 +2,11 @@ log/*
 unused/*
 data/*
 data_overview/
+figures/
+results/
+results_presentation/
+system_diagram/
+
 paper_report/
 .python_pkgs/
 .venv/
@@ -36,3 +41,7 @@ weights/
 # !weights/mediapipe_full/**
 # !weights/nanotapor_full/
 # !weights/nanotapor_full/**
+
+report/
+
+RUNBOOK.md
