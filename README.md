@@ -37,3 +37,49 @@ Dataset notebook: `visualize_dataset.ipynb`
 - `reproduce_results.ipynb`: demo script for quick start.
 - `requirements.txt`: for installing python dependency.
 - `utils.py`: stores utility functions.
+
+
+# Running our system
+1. Setup.
+```
+cd comp9501_project2
+conda activate xxx   # or: source activate py3.10
+export CUDA_VISIBLE_DEVICES=0
+unset PYTHONPATH
+```
+
+2. Train.
+```
+# Full models (with ForwardThermal)
+python -u main.py \
+  --model A \
+  --exp-id hybridA_full \
+  --config config/full.yml \
+  --split-json data/tapor/full_split.json \
+  --device cuda:0
+
+# Same for B / C / D → hybridB_full / hybridC_full / hybridD_full
+
+# No-ForwardThermal ablation
+python -u main.py \
+  --model A \
+  --exp-id hybridA_nofwd_full \
+  --config config/full_nofwd.yml \
+  --split-json data/tapor/full_split.json \
+  --device cuda:0
+```
+
+
+3. Test.
+```
+# All registered exps that have weights/*/best.pt
+python -u scripts/eval_official_testset.py \
+  --split-json data/tapor/official_test_split.json \
+  --device cuda:0
+
+# One / few only (merge into existing JSON)
+python -u scripts/eval_official_testset.py \
+  --only hybridA_full A \
+  --merge \
+  --device cuda:0
+```
