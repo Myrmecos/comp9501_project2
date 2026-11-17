@@ -1,0 +1,15 @@
+Title: Physics-Guided Hand Depth Estimation from Low-Resolution Thermal Arrays
+
+Low-resolution thermal arrays provide low-cost, human-sensitive, and privacy-preserving solutions for hand gesture recognition. Existing work, such as TAPOR (Zhang et al., 2025), has demonstrated 3D hand-pose estimation from thermal measurements. However, explicit and accurate hand-depth recovery remains difficult because observed thermal signals depends not only on distance, but also surface temperature, emissivity, thermal reflections, and sensor characteristics. We aim to investigate whether physics-guided inverse rendering (Zhang et al., 2026) can improve hand depth estimation and support downstream hand pose reconstruction.
+
+Inspired by TAP3D, we propose a differentiable thermal-to-depth framework that jointly estimates hand depth and relevant thermal properties, including surface temperature, emissivity, and reflected radiation. A differentiable forward thermal model reconstructs the observed thermal measurements from these estimates, providing a reconstruction loss for self-supervised learning. Supervised depth loss will also be incorporated, resulting in a semi-supervised learning framework. A lightweight hand keypoint prediction module will perform downstream 3D hand keypoint estimation and gesture classification. 
+
+We will use TAPOR dataset to train and evaluate the proposed model. We will evaluate the depth construction, 3D keypoint estimation and gesture classification quality. We will compare our approach against end-to-end thermal-to-depth models without physics-guided reconstruction. 
+
+We expect the physics-guided reconstruction framework to produce more accurate hand-depth estimation than direct end-to-end thermal-to-depth model. By using thermal reconstruction as an additional training signal, we expect the method to be particularly useful when amount of paired depth data is limited. We further expect improved downstream 3D hand-keypoint estimation quality and gesture classification accuracy from the reconstructed depth. 
+
+References
+
+Zhang, X., Li, C., & Wu, C. (2025). Tapor: 3D hand pose reconstruction with fully passive thermal sensing for around-device interactions. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, 9(2), 1-25.
+
+Zhang, X., Li, C., Liu, X., & Wu, C. (2026). TAP3D: Thermal-Assisted 3D Human Point Clouds. arXiv preprint arXiv:2610.11241.

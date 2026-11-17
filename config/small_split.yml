@@ -1,0 +1,49 @@
+seed: 0
+train_pickles: 12
+val_pickles: 4
+skip_start_frames: 20
+batch_size: 8
+lr: 0.0001
+weight_decay: 0.00001
+optimizer: adamw
+max_epochs: 60
+early_stop_patience: 10
+max_minutes: 55
+num_workers: 2
+height: 24
+width: 32
+
+# Full TAPOR temporal fragment (hybrids stay single-frame)
+num_history: 4
+
+# Adaptive hand mask
+mask_top_frac: 0.25
+mask_min_delta: 6.0
+
+# Default / phase-2 pose-focused weights
+lambda_joint: 1.0
+lambda_bone: 1.0
+lambda_depth: 0.1          # masked hand-focused map (low)
+lambda_hand_depth: 1.0     # scalar hand depth (primary depth signal)
+lambda_recon: 0.5          # masked recon only
+lambda_mask: 0.15
+detach_physics_for_pose: true
+
+# Phase-1: learn hand physics first (epochs 1..phase1_epochs)
+phase1_epochs: 12
+phase1_lambda_joint: 0.25
+phase1_lambda_bone: 0.25
+phase1_lambda_depth: 0.2
+phase1_lambda_hand_depth: 2.5
+phase1_lambda_recon: 1.0
+phase1_lambda_mask: 0.3
+phase1_detach_physics: false
+
+# Phase-2: emphasize joints; stop-grad physics → pose
+phase2_lambda_joint: 1.0
+phase2_lambda_bone: 1.0
+phase2_lambda_depth: 0.1
+phase2_lambda_hand_depth: 1.0
+phase2_lambda_recon: 0.5
+phase2_lambda_mask: 0.15
+phase2_detach_physics: true

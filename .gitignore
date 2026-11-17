@@ -1,2 +1,38 @@
 log/*
 unused/*
+data/*
+data_overview/
+paper_report/
+.python_pkgs/
+.venv/
+third_party/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Caches / IDE
+results_presentation/cache/
+.cursor/
+.claude/
+
+# Ignore weights/* contents (not the dir itself), then re-include selected runs.
+# `weights/` would ignore the directory entirely so !exceptions never apply.
+weights/
+# !weights/gesture_vanilla_full/
+# !weights/gesture_vanilla_full/**
+# !weights/hand3d_full/
+# !weights/hand3d_full/**
+# !weights/hybridA_full/
+# !weights/hybridA_full/**
+# !weights/hybridB_full/
+# !weights/hybridB_full/**
+# !weights/hybridC_full/
+# !weights/hybridC_full/**
+# !weights/hybridD_full/
+# !weights/hybridD_full/**
+# !weights/mediapipe_full/
+# !weights/mediapipe_full/**
+# !weights/nanotapor_full/
+# !weights/nanotapor_full/**

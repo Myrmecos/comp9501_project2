@@ -1,0 +1,16 @@
+# Gesture recognition (TAPOR case study): freeze pose backbone, train linear head.
+seed: 0
+height: 24
+width: 32
+# Keep modest: TAPOR vanilla (history=9) + foreign GPU occupancy can OOM at 64.
+batch_size: 16
+lr: 0.001
+weight_decay: 0.0
+max_epochs: 60
+early_stop_patience: 10
+expanding_vector: 2
+num_classes: 7
+plug_thermal_map: false
+num_workers: 2
+# default history for vanilla; overridden from pose ckpt when present
+num_history: 0

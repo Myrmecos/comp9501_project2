@@ -1,0 +1,13 @@
+gdown>=5.0.0
+numpy>=1.23
+matplotlib>=3.7
+plotly>=5.18
+Pillow>=9.0
+scipy>=1.10
+nbformat>=5.9
+nbclient>=0.10
+ipykernel>=6.29
+# Training: prefer conda env py3.10 (torch 2.6+cu124)
+# torch>=2.1
+tensorboard>=2.14
+PyYAML>=6.0
