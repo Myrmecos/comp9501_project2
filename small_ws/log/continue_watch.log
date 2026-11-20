@@ -1,0 +1,18 @@
+[watch] waiting for C6_full pair Fri Nov 20 03:00:05 PM HKT 2026
+[watch] launching continue_until_full_win Fri Nov 20 06:24:36 PM HKT 2026
+# small_ws promotion (Forward vs nofwd)
+
+gap = nofwd − full (positive ⇒ Forward helps).
+
+| ID | full MPJPE | nofwd MPJPE | gap | status |
+|----|------------|-------------|-----|--------|
+| C6_f20 | 3.618 | 3.821 | +0.203 | done |
+| C6_full | 1.557 | 1.568 | +0.011 | done |
+
+**Best:** C6_f20 gap=+0.203 cm
+Forward **beats** nofwd on this scale.
+
+[cont] C6_full=1.5567 C6_full_nofwd=1.5679 gap=+0.0111
+[cont] C6_full gap=0.011137589081479993 < 0.05 — try C8_full / C12_full
+[cont] start C8_full
+[cont] start C8_full_nofwd

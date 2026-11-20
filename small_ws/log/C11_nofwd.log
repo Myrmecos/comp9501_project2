@@ -1,0 +1,22 @@
+[C11_nofwd] model=A params=21.886M device=cuda:0 bs=8 lr=0.0001 num_history=0 train=2000 val=500 start_epoch=1
+[C11_nofwd] epoch=1 train_loss=0.0522 val_mpjpe_cm=6.536 hand_depth_cm=4.106 depth_cm=4.958 recon=nan
+[C11_nofwd] epoch=2 train_loss=0.0294 val_mpjpe_cm=6.432 hand_depth_cm=3.972 depth_cm=5.029 recon=nan
+[C11_nofwd] epoch=3 train_loss=0.0234 val_mpjpe_cm=8.558 hand_depth_cm=5.457 depth_cm=6.024 recon=nan
+[C11_nofwd] epoch=4 train_loss=0.0204 val_mpjpe_cm=6.087 hand_depth_cm=3.804 depth_cm=4.455 recon=nan
+[C11_nofwd] epoch=5 train_loss=0.0184 val_mpjpe_cm=5.783 hand_depth_cm=3.969 depth_cm=4.994 recon=nan
+[C11_nofwd] epoch=6 train_loss=0.0170 val_mpjpe_cm=5.390 hand_depth_cm=3.617 depth_cm=4.416 recon=nan
+[C11_nofwd] epoch=7 train_loss=0.0157 val_mpjpe_cm=6.638 hand_depth_cm=4.634 depth_cm=5.251 recon=nan
+[C11_nofwd] epoch=8 train_loss=0.0147 val_mpjpe_cm=5.226 hand_depth_cm=3.492 depth_cm=4.531 recon=nan
+[C11_nofwd] epoch=9 train_loss=0.0143 val_mpjpe_cm=5.236 hand_depth_cm=3.385 depth_cm=4.189 recon=nan
+[C11_nofwd] epoch=10 train_loss=0.0134 val_mpjpe_cm=4.741 hand_depth_cm=3.250 depth_cm=4.214 recon=nan
+[C11_nofwd] epoch=11 train_loss=0.0070 val_mpjpe_cm=7.135 hand_depth_cm=3.237 depth_cm=3.975 recon=nan
+[C11_nofwd] epoch=12 train_loss=0.0065 val_mpjpe_cm=5.641 hand_depth_cm=3.249 depth_cm=4.022 recon=nan
+[C11_nofwd] epoch=13 train_loss=0.0064 val_mpjpe_cm=4.444 hand_depth_cm=3.273 depth_cm=4.026 recon=nan
+[C11_nofwd] epoch=14 train_loss=0.0062 val_mpjpe_cm=4.223 hand_depth_cm=2.952 depth_cm=3.870 recon=nan
+[C11_nofwd] epoch=15 train_loss=0.0059 val_mpjpe_cm=4.280 hand_depth_cm=4.093 depth_cm=4.780 recon=nan
+[C11_nofwd] epoch=16 train_loss=0.0058 val_mpjpe_cm=4.510 hand_depth_cm=3.597 depth_cm=4.429 recon=nan
+[C11_nofwd] epoch=17 train_loss=0.0058 val_mpjpe_cm=4.349 hand_depth_cm=2.990 depth_cm=3.817 recon=nan
+[C11_nofwd] epoch=18 train_loss=0.0056 val_mpjpe_cm=4.654 hand_depth_cm=3.934 depth_cm=4.875 recon=nan
+[C11_nofwd] epoch=19 train_loss=0.0056 val_mpjpe_cm=4.307 hand_depth_cm=3.303 depth_cm=4.013 recon=nan
+[C11_nofwd] epoch=20 train_loss=0.0051 val_mpjpe_cm=3.912 hand_depth_cm=3.265 depth_cm=4.362 recon=nan
+[C11_nofwd] done best_mpjpe_cm=3.912 best_mpjpe_cm=3.912 elapsed_s=264.5

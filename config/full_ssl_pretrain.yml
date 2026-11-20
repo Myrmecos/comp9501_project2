@@ -1,0 +1,62 @@
+seed: 0
+batch_size: 16
+lr: 0.0001
+weight_decay: 0.00001
+optimizer: adamw
+# SSL pretrain: recon-only on thermal-only frames (TAP3D Stage 1)
+max_epochs: 80
+early_stop_patience: 15
+early_stop_metric: recon_mae
+max_minutes: 2160
+num_workers: 2
+height: 24
+width: 32
+
+num_history: 9
+
+mask_top_frac: 0.25
+mask_min_delta: 6.0
+
+spatial_ch: 128
+kp_dim: 96
+inverse_base: 64
+
+use_forward: true
+
+# Recon (+ mask) only — no pose/depth supervision
+lambda_joint: 0.0
+lambda_bone: 0.0
+lambda_depth: 0.0
+lambda_hand_depth: 0.0
+lambda_recon: 1.0
+lambda_mask: 0.3
+lambda_heatmap: 0.0
+detach_physics_for_pose: true
+
+# Disable phased schedule so weights stay recon-only for all epochs
+phase1_epochs: 0
+phase1_lambda_joint: 0.0
+phase1_lambda_bone: 0.0
+phase1_lambda_depth: 0.0
+phase1_lambda_hand_depth: 0.0
+phase1_lambda_recon: 1.0
+phase1_lambda_mask: 0.3
+phase1_detach_physics: false
+
+phase2_lambda_joint: 0.0
+phase2_lambda_bone: 0.0
+phase2_lambda_depth: 0.0
+phase2_lambda_hand_depth: 0.0
+phase2_lambda_recon: 1.0
+phase2_lambda_mask: 0.3
+phase2_detach_physics: true
+
+model_overrides:
+  A:
+    batch_size: 12
+  B:
+    batch_size: 16
+  C:
+    batch_size: 12
+  D:
+    batch_size: 12

@@ -1,0 +1,22 @@
+[C11] model=A params=21.889M device=cuda:0 bs=8 lr=0.0001 num_history=0 train=2000 val=500 start_epoch=1
+[C11] epoch=1 train_loss=1.6745 val_mpjpe_cm=10.552 hand_depth_cm=8.934 depth_cm=9.499 recon=0.600
+[C11] epoch=2 train_loss=0.7061 val_mpjpe_cm=7.749 hand_depth_cm=8.330 depth_cm=8.687 recon=0.577
+[C11] epoch=3 train_loss=0.5856 val_mpjpe_cm=8.243 hand_depth_cm=9.137 depth_cm=9.423 recon=0.567
+[C11] epoch=4 train_loss=0.5205 val_mpjpe_cm=6.908 hand_depth_cm=8.520 depth_cm=8.775 recon=0.448
+[C11] epoch=5 train_loss=0.5106 val_mpjpe_cm=6.684 hand_depth_cm=7.335 depth_cm=7.584 recon=0.408
+[C11] epoch=6 train_loss=0.5011 val_mpjpe_cm=9.120 hand_depth_cm=8.328 depth_cm=8.519 recon=0.344
+[C11] epoch=7 train_loss=0.4622 val_mpjpe_cm=12.531 hand_depth_cm=7.734 depth_cm=7.893 recon=0.296
+[C11] epoch=8 train_loss=0.4654 val_mpjpe_cm=8.440 hand_depth_cm=7.692 depth_cm=7.857 recon=0.315
+[C11] epoch=9 train_loss=0.4028 val_mpjpe_cm=7.271 hand_depth_cm=7.307 depth_cm=7.485 recon=0.549
+[C11] epoch=10 train_loss=0.4323 val_mpjpe_cm=6.236 hand_depth_cm=6.855 depth_cm=7.002 recon=0.408
+[C11] epoch=11 train_loss=0.0198 val_mpjpe_cm=5.681 hand_depth_cm=5.404 depth_cm=5.678 recon=0.783
+[C11] epoch=12 train_loss=0.0150 val_mpjpe_cm=5.103 hand_depth_cm=5.177 depth_cm=5.597 recon=1.059
+[C11] epoch=13 train_loss=0.0125 val_mpjpe_cm=4.582 hand_depth_cm=4.859 depth_cm=5.220 recon=1.296
+[C11] epoch=14 train_loss=0.0111 val_mpjpe_cm=4.636 hand_depth_cm=4.230 depth_cm=4.670 recon=1.519
+[C11] epoch=15 train_loss=0.0101 val_mpjpe_cm=4.581 hand_depth_cm=4.211 depth_cm=4.763 recon=1.652
+[C11] epoch=16 train_loss=0.0093 val_mpjpe_cm=4.516 hand_depth_cm=4.034 depth_cm=4.437 recon=1.861
+[C11] epoch=17 train_loss=0.0086 val_mpjpe_cm=4.380 hand_depth_cm=3.942 depth_cm=4.329 recon=1.767
+[C11] epoch=18 train_loss=0.0083 val_mpjpe_cm=4.802 hand_depth_cm=6.935 depth_cm=7.239 recon=2.826
+[C11] epoch=19 train_loss=0.0079 val_mpjpe_cm=3.933 hand_depth_cm=3.775 depth_cm=4.178 recon=1.906
+[C11] epoch=20 train_loss=0.0077 val_mpjpe_cm=3.908 hand_depth_cm=3.844 depth_cm=4.380 recon=2.144
+[C11] done best_mpjpe_cm=3.908 best_mpjpe_cm=3.908 elapsed_s=277.8

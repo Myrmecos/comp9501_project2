@@ -18,7 +18,18 @@ from metrics import depth_mae, hand_depth_mae, mpjpe, recon_mae
 from models import build_model
 from utils import TaporSmallDataset, collate_batch, load_yaml
 
-MODEL_CHOICES = ["vanilla", "A", "B", "C", "D", "mediapipe", "nanotapor", "hand3d"]
+MODEL_CHOICES = [
+    "vanilla",
+    "A",
+    "modified_A",
+    "B",
+    "C",
+    "D",
+    "mediapipe",
+    "nanotapor",
+    "hand3d",
+    "resnet",
+]
 
 
 def set_seed(seed: int):
@@ -88,7 +99,21 @@ def main():
         default=None,
         help="Resume from checkpoint: 'last', 'best', or a path to a .pt file",
     )
+    parser.add_argument(
+        "--load-weights",
+        type=str,
+        default=None,
+        help="Load state_dict only from a .pt path and start from epoch 1 (finetune from SSL)",
+    )
+    parser.add_argument(
+        "--artifact-root",
+        type=Path,
+        default=None,
+        help="If set, write weights/ and log/ under this root (e.g. small_ws) instead of repo root",
+    )
     args = parser.parse_args()
+    if args.resume and args.load_weights:
+        raise SystemExit("Use only one of --resume or --load-weights")
 
     cfg = load_yaml(args.config)
     overrides = (cfg.get("model_overrides") or {}).get(args.model, {})
@@ -110,14 +135,21 @@ def main():
 
     num_history = int(cfg.get("num_history", 0)) if args.model == "vanilla" else 0
     require_heatmap = args.model == "hand3d"
-    # full / noleak splits already enumerate frames — do not subsample
+    # full / noleak / limited_label / micro splits already enumerate frames — do not subsample
     sj = str(args.split_json)
-    max_frames = None if ("full_split" in sj or "noleak" in sj) else 80
+    max_frames = None if (
+        "full_split" in sj
+        or "noleak" in sj
+        or "limited_label" in sj
+        or "micro_split" in sj
+    ) else 80
 
-    log_dir = Path("log/tb") / args.exp_id
-    weight_dir = Path("weights") / args.exp_id
+    art = Path(args.artifact_root) if args.artifact_root else Path(".")
+    log_dir = art / "log" / "tb" / args.exp_id
+    weight_dir = art / "weights" / args.exp_id
     log_dir.mkdir(parents=True, exist_ok=True)
     weight_dir.mkdir(parents=True, exist_ok=True)
+    (art / "log").mkdir(parents=True, exist_ok=True)
     writer = SummaryWriter(str(log_dir))
 
     ds_kwargs = dict(
@@ -163,8 +195,21 @@ def main():
         kp_dim=int(cfg.get("kp_dim", 96)),
         inverse_base=int(cfg.get("inverse_base", 64)),
         use_forward=bool(cfg.get("use_forward", True)),
+        keep_depth_attached=bool(cfg.get("keep_depth_attached", True)),
+        soft_depth_attach=bool(cfg.get("soft_depth_attach", False)),
+        use_mask_inv_skip=bool(cfg.get("use_mask_inv_skip", False)),
+        depth_attach_alpha=(
+            None if cfg.get("depth_attach_alpha") is None else float(cfg.get("depth_attach_alpha"))
+        ),
+        recon_detach_primitives=bool(cfg.get("recon_detach_primitives", False)),
     ).float().to(device)
-    has_physics = bool(getattr(model, "has_physics", args.model not in ("vanilla", "mediapipe", "nanotapor", "hand3d")))
+    has_physics = bool(
+        getattr(
+            model,
+            "has_physics",
+            args.model not in ("vanilla", "mediapipe", "nanotapor", "hand3d", "resnet"),
+        )
+    )
 
     opt_name = str(cfg.get("optimizer", "adamw")).lower()
     lr = float(cfg["lr"])
@@ -174,7 +219,8 @@ def main():
     else:
         opt = torch.optim.Adam(model.parameters(), lr=lr)
 
-    best_mpjpe = float("inf")
+    early_stop_metric = str(cfg.get("early_stop_metric", "mpjpe_cm"))
+    best_score = float("inf")
     best_metrics = {}
     patience = int(cfg.get("early_stop_patience", 8))
     bad = 0
@@ -183,6 +229,36 @@ def main():
     t0 = time.time()
     max_seconds = float(cfg.get("max_minutes", 55)) * 60.0
     history = []
+
+    if args.load_weights:
+        load_path = Path(args.load_weights)
+        if not load_path.exists():
+            raise FileNotFoundError(f"Load-weights checkpoint not found: {load_path}")
+        ckpt = torch.load(load_path, map_location=device, weights_only=False)
+        model.load_state_dict(ckpt["state_dict"])
+        start_epoch = 1
+        print(
+            f"[{args.exp_id}] loaded weights from {load_path} "
+            f"(src_epoch={ckpt.get('epoch')}, src_exp={ckpt.get('exp_id')}); start_epoch=1",
+            flush=True,
+        )
+
+    if bool(cfg.get("freeze_physics", False)):
+        frozen = []
+        for name in ("inverse", "forward_model"):
+            mod = getattr(model, name, None)
+            if mod is None:
+                continue
+            for p in mod.parameters():
+                p.requires_grad_(False)
+            frozen.append(name)
+        # rebuild optimizer on trainable params only
+        trainable = [p for p in model.parameters() if p.requires_grad]
+        if opt_name == "adamw":
+            opt = torch.optim.AdamW(trainable, lr=lr, weight_decay=wd)
+        else:
+            opt = torch.optim.Adam(trainable, lr=lr)
+        print(f"[{args.exp_id}] freeze_physics={frozen} trainable_tensors={len(trainable)}", flush=True)
 
     if args.resume:
         if args.resume in ("last", "best"):
@@ -206,12 +282,12 @@ def main():
             best_metrics = dict(best_ck.get("val_metrics") or {})
             if "epoch" in best_ck:
                 best_metrics["epoch"] = best_ck["epoch"]
-            best_mpjpe = float(best_metrics.get("mpjpe_cm", float("inf")))
+            best_score = float(best_metrics.get(early_stop_metric, best_metrics.get("mpjpe_cm", float("inf"))))
             bad = max(0, int(ckpt.get("epoch", 0)) - int(best_ck.get("epoch", 0)))
         else:
             best_metrics = dict(ckpt.get("val_metrics") or {})
             best_metrics["epoch"] = ckpt.get("epoch")
-            best_mpjpe = float(best_metrics.get("mpjpe_cm", float("inf")))
+            best_score = float(best_metrics.get(early_stop_metric, best_metrics.get("mpjpe_cm", float("inf"))))
         prior_summary = weight_dir / "summary.json"
         if prior_summary.exists():
             try:
@@ -220,7 +296,7 @@ def main():
                 prior_elapsed = 0.0
         print(
             f"[{args.exp_id}] resumed from {resume_path} at epoch {start_epoch} "
-            f"(best_mpjpe={best_mpjpe:.3f} @ ep {best_metrics.get('epoch')}, bad={bad})",
+            f"(best_{early_stop_metric}={best_score:.3f} @ ep {best_metrics.get('epoch')}, bad={bad})",
             flush=True,
         )
 
@@ -259,7 +335,17 @@ def main():
             vals = [r[key] for r in running if key in r]
             return float(np.mean(vals)) if vals else float("nan")
 
-        train_keys = ("total", "joint", "bone", "depth", "hand_depth", "recon", "mask", "heatmap")
+        train_keys = (
+            "total",
+            "joint",
+            "bone",
+            "depth",
+            "hand_depth",
+            "joint_depth",
+            "recon",
+            "mask",
+            "heatmap",
+        )
         train_metrics = {f"train/{k}": avg_key(k) for k in train_keys}
         val_metrics = evaluate(model, val_loader, device, has_physics)
         for k, v in train_metrics.items():
@@ -298,10 +384,15 @@ def main():
             "num_history": num_history,
         }
         torch.save(ckpt, weight_dir / "last.pt")
-        if val_metrics["mpjpe_cm"] < best_mpjpe:
-            best_mpjpe = val_metrics["mpjpe_cm"]
+        score = float(val_metrics.get(early_stop_metric, float("nan")))
+        if not np.isfinite(score):
+            # Fallback if metric missing (e.g. recon on nofwd)
+            score = float(val_metrics.get("mpjpe_cm", float("inf")))
+        if score < best_score:
+            best_score = score
             best_metrics = dict(val_metrics)
             best_metrics["epoch"] = epoch
+            best_metrics["early_stop_metric"] = early_stop_metric
             torch.save(ckpt, weight_dir / "best.pt")
             bad = 0
         else:
@@ -316,17 +407,24 @@ def main():
         "model": args.model,
         "elapsed_sec": elapsed,
         "best": best_metrics,
+        "early_stop_metric": early_stop_metric,
         "train_frames": len(train_ds),
         "val_frames": len(val_ds),
         "params_m": n_params,
         "num_history": num_history,
         "resumed_from_epoch": start_epoch - 1 if args.resume else None,
+        "loaded_weights": args.load_weights,
         "history_tail": history[-5:],
     }
     (weight_dir / "summary.json").write_text(json.dumps(summary, indent=2))
-    (Path("log") / f"{args.exp_id}_summary.json").write_text(json.dumps(summary, indent=2))
+    (art / "log" / f"{args.exp_id}_summary.json").write_text(json.dumps(summary, indent=2))
     writer.close()
-    print(f"[{args.exp_id}] done best_mpjpe_cm={best_mpjpe:.3f} elapsed_s={elapsed:.1f}", flush=True)
+    best_mpjpe = float(best_metrics.get("mpjpe_cm", float("nan"))) if best_metrics else float("nan")
+    print(
+        f"[{args.exp_id}] done best_{early_stop_metric}={best_score:.3f} "
+        f"best_mpjpe_cm={best_mpjpe:.3f} elapsed_s={elapsed:.1f}",
+        flush=True,
+    )
 
 
 if __name__ == "__main__":

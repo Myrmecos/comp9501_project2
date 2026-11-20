@@ -50,6 +50,22 @@ def mask_bce(pred: torch.Tensor, gt: torch.Tensor) -> torch.Tensor:
     return F.binary_cross_entropy_with_logits(pred, gt)
 
 
+def joint_depth_consistency_loss(
+    joints: torch.Tensor, pred_depth: torch.Tensor, mask: torch.Tensor | None = None
+) -> torch.Tensor:
+    """Align mean joint Z (and wrist Z) with masked mean predicted depth (meters)."""
+    # TAPOR joints: index 0 is wrist
+    joint_z = joints[:, :, 2].mean(dim=1, keepdim=True)
+    wrist_z = joints[:, 0:1, 2]
+    if mask is not None:
+        w = mask
+        denom = w.sum(dim=(2, 3)).clamp(min=1.0)
+        depth_mean = (pred_depth * w).sum(dim=(2, 3)) / denom
+    else:
+        depth_mean = pred_depth.mean(dim=(2, 3))
+    return 0.5 * F.smooth_l1_loss(joint_z, depth_mean) + 0.5 * F.smooth_l1_loss(wrist_z, depth_mean)
+
+
 def resolve_loss_weights(cfg: dict, epoch: int) -> dict:
     """Phase-1 emphasizes hand physics; phase-2 emphasizes joints."""
     out = dict(cfg)
@@ -63,6 +79,9 @@ def resolve_loss_weights(cfg: dict, epoch: int) -> dict:
         )
         out["lambda_recon"] = float(cfg.get("phase1_lambda_recon", cfg.get("lambda_recon", 1.0)))
         out["lambda_mask"] = float(cfg.get("phase1_lambda_mask", cfg.get("lambda_mask", 0.2)))
+        out["lambda_joint_depth"] = float(
+            cfg.get("phase1_lambda_joint_depth", cfg.get("lambda_joint_depth", 0.0))
+        )
         out["detach_physics_for_pose"] = bool(cfg.get("phase1_detach_physics", False))
     else:
         out["lambda_joint"] = float(cfg.get("phase2_lambda_joint", cfg.get("lambda_joint", 1.0)))
@@ -73,6 +92,9 @@ def resolve_loss_weights(cfg: dict, epoch: int) -> dict:
         )
         out["lambda_recon"] = float(cfg.get("phase2_lambda_recon", cfg.get("lambda_recon", 0.5)))
         out["lambda_mask"] = float(cfg.get("phase2_lambda_mask", cfg.get("lambda_mask", 0.1)))
+        out["lambda_joint_depth"] = float(
+            cfg.get("phase2_lambda_joint_depth", cfg.get("lambda_joint_depth", 0.0))
+        )
         out["detach_physics_for_pose"] = bool(
             cfg.get("phase2_detach_physics", cfg.get("detach_physics_for_pose", True))
         )
@@ -99,6 +121,11 @@ def total_loss(outputs: dict, batch: dict, cfg: dict, has_physics: bool) -> tupl
                 lh = hand_depth_loss(outputs["depth"], batch["hand_depth"], mask)
                 parts["hand_depth"] = float(lh.detach())
                 loss = loss + cfg.get("lambda_hand_depth", 1.0) * lh
+            ljd_w = float(cfg.get("lambda_joint_depth", 0.0))
+            if ljd_w > 0.0:
+                ljd = joint_depth_consistency_loss(outputs["joints"], outputs["depth"], mask)
+                parts["joint_depth"] = float(ljd.detach())
+                loss = loss + ljd_w * ljd
         if "t_recon" in outputs and outputs["t_recon"] is not None:
             # Reconstruction focused on hand pixels only (not background).
             lr = recon_loss(outputs["t_recon"], batch["thermal_abs"], mask)

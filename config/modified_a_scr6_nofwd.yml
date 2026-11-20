@@ -1,0 +1,56 @@
+# S0: modified_A arch defaults (depth KP + joint-depth loss + depth attached)
+seed: 0
+batch_size: 8
+lr: 0.00005
+weight_decay: 0.00001
+optimizer: adamw
+max_epochs: 40
+early_stop_patience: 10
+max_minutes: 2160
+num_workers: 2
+height: 24
+width: 32
+num_history: 0
+
+mask_top_frac: 0.25
+mask_min_delta: 6.0
+spatial_ch: 128
+kp_dim: 96
+inverse_base: 64
+
+use_forward: false
+keep_depth_attached: true
+soft_depth_attach: false
+
+lambda_joint: 1.0
+lambda_bone: 1.0
+lambda_depth: 0.1
+lambda_hand_depth: 1.0
+lambda_recon: 0.0
+lambda_mask: 0.15
+lambda_joint_depth: 0.3
+lambda_heatmap: 0.0
+detach_physics_for_pose: true
+
+phase1_epochs: 30
+phase1_lambda_joint: 0.25
+phase1_lambda_bone: 0.25
+phase1_lambda_depth: 0.2
+phase1_lambda_hand_depth: 2.5
+phase1_lambda_recon: 0.0
+phase1_lambda_mask: 0.3
+phase1_lambda_joint_depth: 0.3
+phase1_detach_physics: false
+
+phase2_lambda_joint: 1.0
+phase2_lambda_bone: 1.0
+phase2_lambda_depth: 0.1
+phase2_lambda_hand_depth: 1.0
+phase2_lambda_recon: 0.0
+phase2_lambda_mask: 0.15
+phase2_lambda_joint_depth: 0.3
+phase2_detach_physics: true
+
+model_overrides:
+  modified_A:
+    batch_size: 8

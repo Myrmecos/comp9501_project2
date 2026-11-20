@@ -1,0 +1,17 @@
+[C4_ssl_nofwd] model=modified_A params=31.318M device=cuda:0 bs=8 lr=0.0001 num_history=0 train=2000 val=500 start_epoch=1
+[C4_ssl_nofwd] epoch=1 train_loss=0.0518 val_mpjpe_cm=83.376 hand_depth_cm=4.377 depth_cm=5.052 recon=nan
+[C4_ssl_nofwd] epoch=2 train_loss=0.0292 val_mpjpe_cm=82.843 hand_depth_cm=5.490 depth_cm=6.420 recon=nan
+[C4_ssl_nofwd] epoch=3 train_loss=0.0236 val_mpjpe_cm=83.861 hand_depth_cm=4.190 depth_cm=4.857 recon=nan
+[C4_ssl_nofwd] epoch=4 train_loss=0.0195 val_mpjpe_cm=83.736 hand_depth_cm=3.602 depth_cm=4.464 recon=nan
+[C4_ssl_nofwd] epoch=5 train_loss=0.0184 val_mpjpe_cm=84.119 hand_depth_cm=3.475 depth_cm=4.252 recon=nan
+[C4_ssl_nofwd] epoch=6 train_loss=0.0161 val_mpjpe_cm=83.499 hand_depth_cm=3.865 depth_cm=4.662 recon=nan
+[C4_ssl_nofwd] epoch=7 train_loss=0.0157 val_mpjpe_cm=86.422 hand_depth_cm=5.827 depth_cm=6.225 recon=nan
+[C4_ssl_nofwd] epoch=8 train_loss=0.0151 val_mpjpe_cm=83.059 hand_depth_cm=4.241 depth_cm=5.015 recon=nan
+[C4_ssl_nofwd] epoch=9 train_loss=0.0138 val_mpjpe_cm=83.393 hand_depth_cm=3.381 depth_cm=3.936 recon=nan
+[C4_ssl_nofwd] epoch=10 train_loss=0.0135 val_mpjpe_cm=86.118 hand_depth_cm=3.357 depth_cm=4.219 recon=nan
+[C4_ssl_nofwd] epoch=11 train_loss=0.0126 val_mpjpe_cm=82.065 hand_depth_cm=5.464 depth_cm=5.985 recon=nan
+[C4_ssl_nofwd] epoch=12 train_loss=0.0122 val_mpjpe_cm=82.030 hand_depth_cm=3.439 depth_cm=4.360 recon=nan
+[C4_ssl_nofwd] epoch=13 train_loss=0.0120 val_mpjpe_cm=81.403 hand_depth_cm=3.674 depth_cm=4.414 recon=nan
+[C4_ssl_nofwd] epoch=14 train_loss=0.0115 val_mpjpe_cm=85.452 hand_depth_cm=3.177 depth_cm=4.097 recon=nan
+[C4_ssl_nofwd] epoch=15 train_loss=0.0112 val_mpjpe_cm=86.203 hand_depth_cm=3.686 depth_cm=4.479 recon=nan
+[C4_ssl_nofwd] done best_hand_depth_mae_cm=3.177 best_mpjpe_cm=85.452 elapsed_s=220.6

@@ -32,6 +32,12 @@ POSE_EXPS = [
     ("B", "hybridB_full"),
     ("C", "hybridC_full"),
     ("D", "hybridD_full"),
+    ("A", "hybridA_nofwd_full"),
+    ("B", "hybridB_nofwd_full"),
+    ("C", "hybridC_nofwd_full"),
+    ("D", "hybridD_nofwd_full"),
+    ("modified_A", "modifiedA_full"),
+    ("modified_A", "modifiedA_esc_full"),
 ]
 
 
@@ -117,8 +123,7 @@ def load_pose_backbone(model_name: str, ckpt_path: Path, device: torch.device, b
     num_history = int(ckpt.get("num_history", cfg.get("num_history", 0) if model_name == "vanilla" else 0))
     if model_name != "vanilla":
         num_history = 0
-    model = build_model(
-        model_name,
+    build_kwargs = dict(
         batch_size=batch_size,
         device=device,
         num_history=num_history,
@@ -126,7 +131,13 @@ def load_pose_backbone(model_name: str, ckpt_path: Path, device: torch.device, b
         spatial_ch=int(cfg.get("spatial_ch", 128)),
         kp_dim=int(cfg.get("kp_dim", 96)),
         inverse_base=int(cfg.get("inverse_base", 64)),
-    ).float().to(device)
+        use_forward=bool(cfg.get("use_forward", True)),
+    )
+    if model_name == "modified_A":
+        build_kwargs["keep_depth_attached"] = bool(cfg.get("keep_depth_attached", True))
+        build_kwargs["soft_depth_attach"] = bool(cfg.get("soft_depth_attach", False))
+        build_kwargs["use_mask_inv_skip"] = bool(cfg.get("use_mask_inv_skip", False))
+    model = build_model(model_name, **build_kwargs).float().to(device)
     model.load_state_dict(ckpt["state_dict"])
     model.eval()
     for p in model.parameters():
@@ -141,18 +152,44 @@ def train_one(
     cfg: dict,
     device: torch.device,
     out_root: Path,
+    exp_suffix: str = "",
 ):
     use_gt = backbone == "gt_joints"
-    exp_id = f"gesture_{backbone}" if use_gt else f"gesture_{pose_exp}"
+    suffix = exp_suffix or ""
+    if use_gt:
+        exp_id = f"gesture_{backbone}{suffix}"
+    else:
+        exp_id = f"gesture_{pose_exp}{suffix}"
     weight_dir = out_root / "weights" / exp_id
     log_dir = out_root / "log" / "tb" / exp_id
+    # Preservation: never retrain over an existing gesture best.pt
+    existing = weight_dir / "best.pt"
+    summary_path = out_root / "log" / f"{exp_id}_summary.json"
+    if existing.exists():
+        print(f"[{exp_id}] SKIP existing {existing}", flush=True)
+        if summary_path.exists():
+            return json.loads(summary_path.read_text())
+        ck = torch.load(existing, map_location="cpu", weights_only=False)
+        vm = ck.get("val_metrics") or {}
+        return {
+            "exp_id": exp_id,
+            "backbone": backbone,
+            "pose_exp": pose_exp,
+            "best_epoch": ck.get("epoch"),
+            "val_acc": vm.get("acc"),
+            "val_macro_f1": vm.get("macro_f1"),
+            "test_acc": None,
+            "test_macro_f1": None,
+            "status": "skipped_existing",
+            "note": "best.pt already present; not overwritten",
+        }
     weight_dir.mkdir(parents=True, exist_ok=True)
     log_dir.mkdir(parents=True, exist_ok=True)
     writer = SummaryWriter(str(log_dir))
 
     batch_size = int(cfg["batch_size"])
     # Heavy pose models: shrink batch to avoid OOM alongside other GPU users.
-    if backbone in ("vanilla", "hand3d", "A", "C", "D"):
+    if backbone in ("vanilla", "hand3d", "A", "C", "D", "modified_A"):
         batch_size = min(batch_size, 16)
     elif backbone in ("B", "mediapipe"):
         batch_size = min(batch_size, 24)
@@ -325,24 +362,35 @@ def write_results_md(summaries: list[dict], out_md: Path):
         "",
         "Paper reference (case study F1): Tapor **~94.9%**, NanoTapor **~87.2%**.",
         "",
-        "| Backbone | Pose exp | Test Acc (%) | Test macro-F1 (%) | Val Acc | Best ep | Test N | Status |",
-        "|----------|----------|--------------|-------------------|---------|---------|--------|--------|",
+        "| Backbone | Exp id | Test Acc (%) | Test macro-F1 (%) | Val Acc | Best ep | Test N | Status |",
+        "|----------|--------|--------------|-------------------|---------|---------|--------|--------|",
     ]
-    for s in summaries:
-        if s.get("status") and s["status"] != "ok":
+    # Prefer v2 / longer-trained rows before legacy when sorting for readability
+    def _sort_key(s):
+        return (str(s.get("backbone") or ""), str(s.get("exp_id") or s.get("pose_exp") or ""))
+
+    for s in sorted(summaries, key=_sort_key):
+        st = s.get("status") or "ok"
+        eid = s.get("exp_id") or (
+            f"gesture_{s['backbone']}" if s.get("backbone") == "gt_joints" else f"gesture_{s.get('pose_exp')}"
+        )
+        if st not in ("ok", "skipped_existing") or s.get("test_acc") is None:
             lines.append(
-                f"| {s.get('backbone')} | {s.get('pose_exp')} | - | - | - | - | - | {s['status']} |"
+                f"| {s.get('backbone')} | {eid} | - | - | "
+                f"{s.get('val_acc') if s.get('val_acc') is not None else '-'} | "
+                f"{s.get('best_epoch') or '-'} | - | {st} |"
             )
             continue
         lines.append(
-            "| {bb} | {pe} | {acc:.2f} | {f1:.2f} | {va:.2f} | {ep} | {n} | ok |".format(
+            "| {bb} | {eid} | {acc:.2f} | {f1:.2f} | {va:.2f} | {ep} | {n} | {st} |".format(
                 bb=s["backbone"],
-                pe=s.get("pose_exp") or "-",
-                acc=s["test_acc"],
-                f1=s["test_macro_f1"],
-                va=s["val_acc"],
-                ep=s["best_epoch"],
-                n=s["test_n"],
+                eid=eid,
+                acc=float(s["test_acc"]),
+                f1=float(s["test_macro_f1"]),
+                va=float(s["val_acc"]),
+                ep=s.get("best_epoch"),
+                n=s.get("test_n", "-"),
+                st=st,
             )
         )
     lines += [
@@ -369,6 +417,12 @@ def main():
         help="Pose model names and/or 'gt_joints'. Default: all pose exps + gt_joints.",
     )
     ap.add_argument("--out-md", type=Path, default=Path("log/GESTURE_RESULTS.md"))
+    ap.add_argument(
+        "--exp-suffix",
+        type=str,
+        default="",
+        help="Append to gesture exp id (e.g. _v2) so retrain does not clobber existing best.pt",
+    )
     args = ap.parse_args()
 
     if not args.split_json.exists():
@@ -381,31 +435,59 @@ def main():
     wanted = args.backbones
     jobs = []
     if wanted is None:
-        jobs = list(POSE_EXPS) + [("gt_joints", None)]
+        # default: primary full exps only (first occurrence per model) + gt
+        seen = set()
+        for m, e in POSE_EXPS:
+            if m in seen or "nofwd" in e:
+                continue
+            seen.add(m)
+            jobs.append((m, e))
+        jobs.append(("gt_joints", None))
     else:
-        name_to_exp = {m: e for m, e in POSE_EXPS}
+        # Prefer exact pose-exp match; fall back to first model-name match
+        exp_to_model = {e: m for m, e in POSE_EXPS}
+        first_by_model: dict[str, str] = {}
+        for m, e in POSE_EXPS:
+            first_by_model.setdefault(m, e)
         for name in wanted:
             if name == "gt_joints":
                 jobs.append(("gt_joints", None))
-            elif name in name_to_exp:
-                jobs.append((name, name_to_exp[name]))
+            elif name in exp_to_model:
+                jobs.append((exp_to_model[name], name))
+            elif name in first_by_model:
+                jobs.append((name, first_by_model[name]))
             else:
-                # allow passing exp id like hybridA_full
-                hit = [(m, e) for m, e in POSE_EXPS if e == name or m == name]
-                if not hit:
-                    raise SystemExit(f"Unknown backbone {name}")
-                jobs.extend(hit)
+                raise SystemExit(f"Unknown backbone {name}")
 
     summaries = []
     for backbone, pose_exp in jobs:
         try:
-            s = train_one(backbone, pose_exp, args.split_json, cfg, device, ROOT)
-            s["status"] = "ok"
+            s = train_one(
+                backbone, pose_exp, args.split_json, cfg, device, ROOT, exp_suffix=args.exp_suffix
+            )
+            if "status" not in s:
+                s["status"] = "ok"
             summaries.append(s)
         except Exception as e:
             print(f"[FAILED] {backbone}/{pose_exp}: {e}", flush=True)
             summaries.append({"backbone": backbone, "pose_exp": pose_exp, "status": f"error: {e}"})
             torch.cuda.empty_cache()
+
+    # Merge any on-disk gesture summaries not in this batch (vanilla/gt etc.)
+    by_id = {s.get("exp_id"): s for s in summaries if s.get("exp_id")}
+    for p in sorted(Path("log").glob("gesture_*_summary.json")):
+        try:
+            row = json.loads(p.read_text())
+        except Exception:
+            continue
+        eid = row.get("exp_id") or p.name.replace("_summary.json", "")
+        row.setdefault("exp_id", eid)
+        row.setdefault("status", "ok")
+        if eid not in by_id:
+            by_id[eid] = row
+            summaries.append(row)
+        elif by_id[eid].get("test_acc") is None and row.get("test_acc") is not None:
+            by_id[eid].update(row)
 
     out_json = Path("log/gesture_results.json")
     out_json.write_text(json.dumps(summaries, indent=2))

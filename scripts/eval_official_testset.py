@@ -34,10 +34,26 @@ EXPS = [
     ("mediapipe", "mediapipe_full"),
     ("nanotapor", "nanotapor_full"),
     ("vanilla", "vanilla_full"),
+    ("resnet", "resnet_full"),
     ("A", "hybridA_full"),
     ("B", "hybridB_full"),
     ("C", "hybridC_full"),
     ("D", "hybridD_full"),
+    ("modified_A", "modifiedA_full"),
+    ("modified_A", "modifiedA_nofwd_full"),
+    ("modified_A", "modifiedA_esc_full"),
+    ("modified_A", "modifiedA_esc_nofwd_full"),
+    ("A", "hybridA_nofwd_full"),
+    ("A", "hybridA_ll05_ft"),
+    ("A", "hybridA_ll05_nofwd"),
+    ("A", "hybridA_ll10_ft"),
+    ("A", "hybridA_ll10_nofwd"),
+    ("A", "hybridA_ll20_ft"),
+    ("A", "hybridA_ll20_nofwd"),
+    ("A", "hybridA_ll40_ft"),
+    ("A", "hybridA_ll40_nofwd"),
+    ("A", "hybridA_ll60_ft"),
+    ("A", "hybridA_ll60_nofwd"),
 ]
 
 
@@ -65,8 +81,7 @@ def eval_ckpt(model_name: str, ckpt_path: Path, split_json: Path, device: torch.
     )
     loader = DataLoader(ds, batch_size=batch_size, shuffle=False, num_workers=2, collate_fn=collate_batch)
 
-    model = build_model(
-        model_name,
+    build_kwargs = dict(
         batch_size=batch_size,
         device=device,
         num_history=num_history,
@@ -74,7 +89,13 @@ def eval_ckpt(model_name: str, ckpt_path: Path, split_json: Path, device: torch.
         spatial_ch=int(cfg.get("spatial_ch", 128)),
         kp_dim=int(cfg.get("kp_dim", 96)),
         inverse_base=int(cfg.get("inverse_base", 64)),
-    ).float().to(device)
+        use_forward=bool(cfg.get("use_forward", True)),
+    )
+    if model_name == "modified_A":
+        build_kwargs["keep_depth_attached"] = bool(cfg.get("keep_depth_attached", True))
+        build_kwargs["soft_depth_attach"] = bool(cfg.get("soft_depth_attach", False))
+        build_kwargs["use_mask_inv_skip"] = bool(cfg.get("use_mask_inv_skip", False))
+    model = build_model(model_name, **build_kwargs).float().to(device)
     model.load_state_dict(ckpt["state_dict"])
     model.eval()
     has_physics = bool(getattr(model, "has_physics", False))

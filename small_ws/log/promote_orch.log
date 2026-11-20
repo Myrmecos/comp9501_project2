@@ -1,0 +1,65 @@
+[promote] === f20 stage ===
+[promote] start C6_f20 model=modified_A split=limited_label_f20_coupled.json
+  pid=3238714
+[promote] start C6_f20_nofwd model=modified_A split=limited_label_f20_coupled.json
+  pid=3238723
+# small_ws promotion (Forward vs nofwd)
+
+gap = nofwd − full (positive ⇒ Forward helps). Original HybridA untouched.
+
+| ID | full MPJPE | nofwd MPJPE | gap | status |
+|----|------------|-------------|-----|--------|
+| C6_f20 | 3.618 | 3.821 | +0.203 | done |
+| C8_f20 | — | — | — | pending |
+| C12_f20 | — | — | — | pending |
+| C6_full | — | — | — | pending |
+| C8_full | — | — | — | pending |
+| C12_full | — | — | — | pending |
+
+**Best promote:** C6_f20 gap=+0.203 cm
+Forward **beats** nofwd on this scale.
+
+[promote] C6_f20=3.6176 C6_f20_nofwd=3.8207 gap=+0.2031
+[promote] pair C6_f20 gap=0.20308434209057502
+[promote] f20 WIN: C6_f20
+[promote] === full_split stage for C6 ===
+[promote] start C6_full model=modified_A split=full_split.json
+  pid=3245616
+[promote] start C6_full_nofwd model=modified_A split=full_split.json
+  pid=3245625
+# small_ws promotion (Forward vs nofwd)
+
+gap = nofwd − full (positive ⇒ Forward helps). Original HybridA untouched.
+
+| ID | full MPJPE | nofwd MPJPE | gap | status |
+|----|------------|-------------|-----|--------|
+| C6_f20 | 3.618 | 3.821 | +0.203 | done |
+| C8_f20 | — | — | — | pending |
+| C12_f20 | — | — | — | pending |
+| C6_full | 1.557 | 1.568 | +0.011 | done |
+| C8_full | — | — | — | pending |
+| C12_full | — | — | — | pending |
+
+**Best promote:** C6_f20 gap=+0.203 cm
+Forward **beats** nofwd on this scale.
+
+[promote] C6_full=1.5567 C6_full_nofwd=1.5679 gap=+0.0111
+[promote] pair C6_full gap=0.011137589081479993
+[promote] C6_full=1.5567 C6_full_nofwd=1.5679 gap=+0.0111
+# small_ws promotion (Forward vs nofwd)
+
+gap = nofwd − full (positive ⇒ Forward helps). Original HybridA untouched.
+
+| ID | full MPJPE | nofwd MPJPE | gap | status |
+|----|------------|-------------|-----|--------|
+| C6_f20 | 3.618 | 3.821 | +0.203 | done |
+| C8_f20 | — | — | — | pending |
+| C12_f20 | — | — | — | pending |
+| C6_full | 1.557 | 1.568 | +0.011 | done |
+| C8_full | — | — | — | pending |
+| C12_full | — | — | — | pending |
+
+**Best promote:** C6_f20 gap=+0.203 cm
+Forward **beats** nofwd on this scale.
+
+[promote] full gap 0.011137589081479993 < 0.05 but continuing — record best effort

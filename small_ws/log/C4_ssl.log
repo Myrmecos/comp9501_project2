@@ -1,0 +1,17 @@
+[C4_ssl] model=modified_A params=31.321M device=cuda:0 bs=8 lr=0.0001 num_history=0 train=2000 val=500 start_epoch=1
+[C4_ssl] epoch=1 train_loss=1.6890 val_mpjpe_cm=31.465 hand_depth_cm=8.252 depth_cm=8.970 recon=0.645
+[C4_ssl] epoch=2 train_loss=0.6504 val_mpjpe_cm=31.734 hand_depth_cm=8.058 depth_cm=8.588 recon=0.511
+[C4_ssl] epoch=3 train_loss=0.5758 val_mpjpe_cm=30.382 hand_depth_cm=9.287 depth_cm=9.625 recon=0.421
+[C4_ssl] epoch=4 train_loss=0.5350 val_mpjpe_cm=30.586 hand_depth_cm=8.542 depth_cm=8.926 recon=0.398
+[C4_ssl] epoch=5 train_loss=0.5110 val_mpjpe_cm=25.442 hand_depth_cm=9.376 depth_cm=9.659 recon=0.902
+[C4_ssl] epoch=6 train_loss=0.5445 val_mpjpe_cm=31.674 hand_depth_cm=8.109 depth_cm=8.444 recon=0.359
+[C4_ssl] epoch=7 train_loss=0.5191 val_mpjpe_cm=30.468 hand_depth_cm=8.156 depth_cm=8.454 recon=0.714
+[C4_ssl] epoch=8 train_loss=0.4858 val_mpjpe_cm=31.350 hand_depth_cm=7.667 depth_cm=7.950 recon=0.265
+[C4_ssl] epoch=9 train_loss=0.4412 val_mpjpe_cm=31.350 hand_depth_cm=7.609 depth_cm=7.864 recon=0.627
+[C4_ssl] epoch=10 train_loss=0.4137 val_mpjpe_cm=31.212 hand_depth_cm=7.589 depth_cm=7.789 recon=0.339
+[C4_ssl] epoch=11 train_loss=0.4302 val_mpjpe_cm=30.850 hand_depth_cm=7.531 depth_cm=7.823 recon=0.429
+[C4_ssl] epoch=12 train_loss=0.4361 val_mpjpe_cm=35.697 hand_depth_cm=9.796 depth_cm=9.909 recon=1.128
+[C4_ssl] epoch=13 train_loss=0.3926 val_mpjpe_cm=31.056 hand_depth_cm=7.231 depth_cm=7.592 recon=0.230
+[C4_ssl] epoch=14 train_loss=0.4029 val_mpjpe_cm=32.197 hand_depth_cm=8.368 depth_cm=8.534 recon=1.030
+[C4_ssl] epoch=15 train_loss=0.3896 val_mpjpe_cm=31.225 hand_depth_cm=7.021 depth_cm=7.265 recon=0.333
+[C4_ssl] done best_hand_depth_mae_cm=7.021 best_mpjpe_cm=31.225 elapsed_s=225.2
