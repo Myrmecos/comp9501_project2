@@ -24,7 +24,7 @@ The completed training command was:
 python traintest.py -m tapor -e 200 -b 48 -fs 1 -ms 0 -t 0 -lr 0.0001 -hm 0 -fo 1 -s 0 -mt 1 -ls jb -tqdm 1
 ```
 
-The resulting raw PyTorch `state_dict` is [`../../weights/tapor_reproduced.pth`](../../weights/tapor_reproduced.pth), copied byte-for-byte from the best Epoch 194 checkpoint. SHA-256: `7c87dc5cd1aaa2029ba9511092d7735f70114e573dcf9ba2eca3ddd59735c60f`.
+The resulting raw PyTorch `state_dict` was saved locally as `weights/tapor_reproduced.pth` (gitignored; not uploaded). SHA-256: `7c87dc5cd1aaa2029ba9511092d7735f70114e573dcf9ba2eca3ddd59735c60f`.
 
 ## Evaluation Results
 

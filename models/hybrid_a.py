@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 
 from .common import FiLM, InverseUNet, KPFeatureExtractor, PositionRetrievalDecoder, ThermoSpaceEncoder
-from .forward_thermal import ForwardThermal
+from .forward_thermal import ForwardThermal, apply_forward
 from .physics_utils import ambient_normalize, maybe_detach
 
 
@@ -20,13 +20,16 @@ class HybridA(nn.Module):
         inverse_base=64,
         detach_physics_for_pose=True,
         use_forward=True,
+        use_residual=True,
         **_kwargs,
     ):
         super().__init__()
         self.detach_physics_for_pose = bool(detach_physics_for_pose)
         self.use_forward = bool(use_forward)
         self.inverse = InverseUNet(in_ch=in_ch, base=inverse_base, out_ch=5)
-        self.forward_model = ForwardThermal() if self.use_forward else None
+        self.forward_model = (
+            ForwardThermal(use_residual=bool(use_residual)) if self.use_forward else None
+        )
         self.thermo = ThermoSpaceEncoder(in_ch=4, out_ch=spatial_ch)
         self.film = FiLM(cue_dim=4, ch=spatial_ch)
         self.kp = KPFeatureExtractor(in_ch=4, feat_dim=kp_dim)
@@ -36,11 +39,14 @@ class HybridA(nn.Module):
         # thermal here is absolute °C (B,1,H,W); normalize for encoders
         thermal_n = ambient_normalize(thermal, ambient)
         prim = self.inverse(thermal_n)
-        t_recon = None
-        if self.forward_model is not None:
-            t_recon = self.forward_model(
-                prim["depth"], prim["emissivity"], prim["surface_temp"], prim["reflection"], ambient
-            )
+        fwd = apply_forward(
+            self.forward_model,
+            prim["depth"],
+            prim["emissivity"],
+            prim["surface_temp"],
+            prim["reflection"],
+            ambient,
+        )
         d = maybe_detach(prim["depth"], self.detach_physics_for_pose)
         e = maybe_detach(prim["emissivity"], self.detach_physics_for_pose)
         tt = maybe_detach(prim["surface_temp"], self.detach_physics_for_pose)
@@ -56,7 +62,9 @@ class HybridA(nn.Module):
         return {
             "joints": joints,
             "depth": prim["depth"],
-            "t_recon": t_recon,
+            "t_recon": fwd["t_recon"],
+            "t_phys": fwd["t_phys"],
+            "t_residual": fwd["t_residual"],
             "mask_logits": prim["mask_logits"],
             "emissivity": prim["emissivity"],
             "surface_temp": prim["surface_temp"],

@@ -1,2 +1,0 @@
-[C8_full] model=modified_A params=31.321M device=cuda:0 bs=8 lr=0.0001 num_history=0 train=26751 val=3343 start_epoch=1
-[C8_full] epoch=1 train_loss=0.0495 val_mpjpe_cm=4.309 hand_depth_cm=3.958 depth_cm=4.267 recon=0.504

@@ -3,7 +3,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
-PYTHON="/home/liuxuan/anaconda3/envs/py3.10/bin/python"
+PYTHON="${PYTHON:-python3}"
 export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 unset PYTHONPATH || true
 mkdir -p log

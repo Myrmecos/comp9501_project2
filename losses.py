@@ -78,6 +78,12 @@ def resolve_loss_weights(cfg: dict, epoch: int) -> dict:
             cfg.get("phase1_lambda_hand_depth", cfg.get("lambda_hand_depth", 2.0))
         )
         out["lambda_recon"] = float(cfg.get("phase1_lambda_recon", cfg.get("lambda_recon", 1.0)))
+        out["lambda_recon_phys"] = float(
+            cfg.get("phase1_lambda_recon_phys", cfg.get("lambda_recon_phys", 0.0))
+        )
+        out["lambda_residual"] = float(
+            cfg.get("phase1_lambda_residual", cfg.get("lambda_residual", 0.0))
+        )
         out["lambda_mask"] = float(cfg.get("phase1_lambda_mask", cfg.get("lambda_mask", 0.2)))
         out["lambda_joint_depth"] = float(
             cfg.get("phase1_lambda_joint_depth", cfg.get("lambda_joint_depth", 0.0))
@@ -91,6 +97,12 @@ def resolve_loss_weights(cfg: dict, epoch: int) -> dict:
             cfg.get("phase2_lambda_hand_depth", cfg.get("lambda_hand_depth", 1.0))
         )
         out["lambda_recon"] = float(cfg.get("phase2_lambda_recon", cfg.get("lambda_recon", 0.5)))
+        out["lambda_recon_phys"] = float(
+            cfg.get("phase2_lambda_recon_phys", cfg.get("lambda_recon_phys", 0.0))
+        )
+        out["lambda_residual"] = float(
+            cfg.get("phase2_lambda_residual", cfg.get("lambda_residual", 0.0))
+        )
         out["lambda_mask"] = float(cfg.get("phase2_lambda_mask", cfg.get("lambda_mask", 0.1)))
         out["lambda_joint_depth"] = float(
             cfg.get("phase2_lambda_joint_depth", cfg.get("lambda_joint_depth", 0.0))
@@ -131,6 +143,24 @@ def total_loss(outputs: dict, batch: dict, cfg: dict, has_physics: bool) -> tupl
             lr = recon_loss(outputs["t_recon"], batch["thermal_abs"], mask)
             parts["recon"] = float(lr.detach())
             loss = loss + cfg.get("lambda_recon", 0.5) * lr
+        # Harden physics: supervise pure physics branch (bypasses residual CNN).
+        if outputs.get("t_phys") is not None:
+            lrp_w = float(cfg.get("lambda_recon_phys", 0.0))
+            if lrp_w > 0.0:
+                lrp = recon_loss(outputs["t_phys"], batch["thermal_abs"], mask)
+                parts["recon_phys"] = float(lrp.detach())
+                loss = loss + lrp_w * lrp
+        # Shrink residual dominance: penalize |δ|.
+        if outputs.get("t_residual") is not None:
+            lres_w = float(cfg.get("lambda_residual", 0.0))
+            if lres_w > 0.0:
+                delta = outputs["t_residual"]
+                if mask is not None and mask.sum() >= 1:
+                    lres = (delta.abs() * mask).sum() / mask.sum().clamp(min=1.0)
+                else:
+                    lres = delta.abs().mean()
+                parts["residual"] = float(lres.detach())
+                loss = loss + lres_w * lres
         if "mask_logits" in outputs and outputs["mask_logits"] is not None and mask is not None:
             lm = mask_bce(outputs["mask_logits"], mask)
             parts["mask"] = float(lm.detach())

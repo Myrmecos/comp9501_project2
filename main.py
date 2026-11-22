@@ -23,8 +23,11 @@ MODEL_CHOICES = [
     "A",
     "modified_A",
     "B",
+    "modified_B",
     "C",
+    "modified_C",
     "D",
+    "modified_D",
     "mediapipe",
     "nanotapor",
     "hand3d",
@@ -202,6 +205,7 @@ def main():
             None if cfg.get("depth_attach_alpha") is None else float(cfg.get("depth_attach_alpha"))
         ),
         recon_detach_primitives=bool(cfg.get("recon_detach_primitives", False)),
+        use_residual=bool(cfg.get("use_residual", True)),
     ).float().to(device)
     has_physics = bool(
         getattr(
@@ -343,6 +347,8 @@ def main():
             "hand_depth",
             "joint_depth",
             "recon",
+            "recon_phys",
+            "residual",
             "mask",
             "heatmap",
         )

@@ -1,29 +1,36 @@
-# small_ws — fast Forward-vs-nofwd search
+# small_ws — Forward vs nofwd ablation workspace
 
-Isolated workspace so main `weights/` / `log/` stay clean.
+Isolated artifact root so main `weights/` / `log/` stay clean.
+See the root [README.md](../README.md) for split definitions and the full ablation guide.
 
-## Goal
+## Purpose
 
-Find **parameter sets / structures** where `with Forward` beats `nofwd` on a **micro split** (2k train / 500 val frames from `full_split`), then promote winners to larger data.
+Screen and evaluate **modified_B / modified_C / modified_D** (and selected
+modified_A recipes such as **C6**) where ForwardThermal beats the matched
+`*_nofwd` ablation.
 
-**Score:** `gap = nofwd_mpjpe − full_mpjpe` (positive ⇒ Forward helps). Target gap ≥ **0.05 cm** on micro before scaling up.
+**Score:** `gap = nofwd_MPJPE − forward_MPJPE` (cm).
 
 ## Layout
 
-| path | role |
+| Path | Role |
 |------|------|
-| `data/micro_split.json` | 2000 / 500 frame split |
-| `config/` | candidate YAMLs (`*_nofwd.yml` pairs) |
-| `weights/`, `log/` | all micro-run artifacts (`--artifact-root small_ws`) |
-| `CANDIDATES.md` | hypothesis list |
-| `log/MICRO_SCREEN.md` | live gap table |
+| `data/micro_split.json` | 2k / 500 micro split |
+| `config/` | Reported recipes: `C6*`, `MB*`, `MC*`, `MC2*`, `MD*` (+ `*_nofwd`) |
+| `scripts/` | Micro / fraction runners and collectors |
+| `weights/`, `log/` | Local artifacts (gitignored) |
 
-## Run
+## Quick start
 
 ```bash
 # from repo root
-bash small_ws/scripts/run_micro_candidates.sh C0 C1 C2   # paired full/nofwd
+bash small_ws/scripts/run_modified_bcd_micro.sh
+bash small_ws/scripts/run_modified_bcd_frac.sh
+# or full orchestrator:
+bash small_ws/scripts/orch_modified_bcd.sh
+
 python small_ws/scripts/collect_micro.py
+python small_ws/scripts/collect_modified_bcd_frac.py
 ```
 
-Uses repo `main.py` / `models/` with `--artifact-root small_ws`.
+All training calls use `python -u main.py ... --artifact-root small_ws`.

@@ -1,47 +1,47 @@
-log/*
-unused/*
-data/*
-data_overview/
-figures/
-results/
-results_presentation/
-system_diagram/
-
-paper_report/
+# --- Local / archival (not part of submission) ---
+unused/
+.cursor/
+.claude/
 .python_pkgs/
 .venv/
 third_party/
+paper_report/
+data_overview/
+report/
+RUNBOOK.md
 
-# Python
+# --- Large datasets (regenerate splits from scripts; keep JSON whitelisted) ---
+data/*
+!data/tapor/
+data/tapor/**
+!data/tapor/*.json
+# Regenerable; rebuild via scripts/make_limited_label_split.py
+data/tapor/limited_label_*_meta.json
+data/tapor/limited_label_*_ssl.json
+!data/tapor/MANIFEST.md
+
+# --- Training artifacts (checkpoints, logs, TensorBoard) ---
+log/
+weights/
+*.pt
+*.pth
+*.pid
+events.out.tfevents.*
+
+small_ws/log/
+small_ws/weights/
+physics_correct_ws/log/
+physics_correct_ws/weights/
+
+# --- Python / IDE / OS junk ---
 __pycache__/
 *.py[cod]
 *.pyo
+*.egg-info/
+.ipynb_checkpoints/
+.DS_Store
+*.swp
+*~
 
-# Caches / IDE
+# Presentation / notebook caches
 results_presentation/cache/
-.cursor/
-.claude/
-
-# Ignore weights/* contents (not the dir itself), then re-include selected runs.
-# `weights/` would ignore the directory entirely so !exceptions never apply.
-weights/
-# !weights/gesture_vanilla_full/
-# !weights/gesture_vanilla_full/**
-# !weights/hand3d_full/
-# !weights/hand3d_full/**
-# !weights/hybridA_full/
-# !weights/hybridA_full/**
-# !weights/hybridB_full/
-# !weights/hybridB_full/**
-# !weights/hybridC_full/
-# !weights/hybridC_full/**
-# !weights/hybridD_full/
-# !weights/hybridD_full/**
-# !weights/mediapipe_full/
-# !weights/mediapipe_full/**
-# !weights/nanotapor_full/
-# !weights/nanotapor_full/**
-
-report/
-
-RUNBOOK.md

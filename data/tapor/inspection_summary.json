@@ -1,0 +1,572 @@
+[
+  {
+    "archive": "Trainset",
+    "dir": "data/tapor/Trainset",
+    "n_files": 123,
+    "filenames_sample": [
+      "P1_U1_L_1_D_0.pkl",
+      "P1_U1_L_1_Z_0.pkl",
+      "P1_U1_L_2_O_0.pkl",
+      "P1_U1_L_2_S_0.pkl",
+      "P1_U1_L_3_T_0.pkl",
+      "P1_U1_L_4_O_0.pkl",
+      "P1_U1_L_4_Z_0.pkl",
+      "P1_U1_L_5_D_0.pkl"
+    ],
+    "all_keys_union": [
+      "label_2d_joints",
+      "label_3d_joints",
+      "label_depth_maps",
+      "label_hand_depth",
+      "thermal_array_ambient_temperatures",
+      "thermal_array_temperature_maps"
+    ],
+    "key_presence": {
+      "thermal_array_temperature_maps": 123,
+      "thermal_array_ambient_temperatures": 123,
+      "label_depth_maps": 123,
+      "label_2d_joints": 123,
+      "label_3d_joints": 123,
+      "label_hand_depth": 123
+    },
+    "samples": [
+      {
+        "file": "P1_U1_L_1_D_0.pkl",
+        "keys": [
+          "thermal_array_temperature_maps",
+          "thermal_array_ambient_temperatures",
+          "label_depth_maps",
+          "label_2d_joints",
+          "label_3d_joints",
+          "label_hand_depth"
+        ],
+        "thermal_array_temperature_maps_frames": 300,
+        "thermal_array_temperature_maps_frame0_shape": [
+          24,
+          32
+        ],
+        "thermal_array_temperature_maps_frame0_dtype": "float64",
+        "thermal_array_temperature_maps_frame0_minmax": [
+          0.0,
+          34.361992
+        ],
+        "thermal_array_ambient_temperatures_frames": 300,
+        "thermal_array_ambient_temperatures_frame0_shape": [],
+        "thermal_array_ambient_temperatures_frame0_dtype": "float64",
+        "thermal_array_ambient_temperatures_frame0_minmax": [
+          17.087948,
+          17.087948
+        ],
+        "label_depth_maps_frames": 300,
+        "label_depth_maps_frame0_shape": [
+          120,
+          160
+        ],
+        "label_depth_maps_frame0_dtype": "uint16",
+        "label_depth_maps_frame0_minmax": [
+          0.0,
+          1837.0
+        ],
+        "label_2d_joints_frames": 300,
+        "label_2d_joints_frame0_shape": [
+          21,
+          3
+        ],
+        "label_2d_joints_frame0_dtype": "float64",
+        "label_2d_joints_frame0_minmax": [
+          0.14586186408996582,
+          0.6306758259618005
+        ],
+        "label_3d_joints_frames": 300,
+        "label_3d_joints_frame0_shape": [
+          0
+        ],
+        "label_3d_joints_frame0_dtype": "float64",
+        "label_hand_depth_frames": 300,
+        "label_hand_depth_frame0_shape": [],
+        "label_hand_depth_frame0_dtype": "float64",
+        "label_hand_depth_frame0_minmax": [
+          0.340571444659006,
+          0.340571444659006
+        ]
+      },
+      {
+        "file": "P1_U1_L_1_Z_0.pkl",
+        "keys": [
+          "thermal_array_temperature_maps",
+          "thermal_array_ambient_temperatures",
+          "label_depth_maps",
+          "label_2d_joints",
+          "label_3d_joints",
+          "label_hand_depth"
+        ],
+        "thermal_array_temperature_maps_frames": 300,
+        "thermal_array_temperature_maps_frame0_shape": [
+          24,
+          32
+        ],
+        "thermal_array_temperature_maps_frame0_dtype": "float64",
+        "thermal_array_temperature_maps_frame0_minmax": [
+          0.0,
+          33.680595
+        ],
+        "thermal_array_ambient_temperatures_frames": 300,
+        "thermal_array_ambient_temperatures_frame0_shape": [],
+        "thermal_array_ambient_temperatures_frame0_dtype": "float64",
+        "thermal_array_ambient_temperatures_frame0_minmax": [
+          17.097021,
+          17.097021
+        ],
+        "label_depth_maps_frames": 300,
+        "label_depth_maps_frame0_shape": [
+          120,
+          160
+        ],
+        "label_depth_maps_frame0_dtype": "uint16",
+        "label_depth_maps_frame0_minmax": [
+          0.0,
+          1843.0
+        ],
+        "label_2d_joints_frames": 300,
+        "label_2d_joints_frame0_shape": [
+          21,
+          3
+        ],
+        "label_2d_joints_frame0_dtype": "float64",
+        "label_2d_joints_frame0_minmax": [
+          0.07043061022302594,
+          0.6416224841923677
+        ],
+        "label_3d_joints_frames": 300,
+        "label_3d_joints_frame0_shape": [
+          0
+        ],
+        "label_3d_joints_frame0_dtype": "float64",
+        "label_hand_depth_frames": 300,
+        "label_hand_depth_frame0_shape": [],
+        "label_hand_depth_frame0_dtype": "float64",
+        "label_hand_depth_frame0_minmax": [
+          0.5884286037513188,
+          0.5884286037513188
+        ]
+      }
+    ],
+    "gesture_name_counts": {},
+    "thermal_shapes": {
+      "[24, 32]": 123
+    },
+    "depth_shapes": {
+      "[120, 160]": 123
+    },
+    "joint3d_valid": 3472,
+    "joint3d_empty": 218,
+    "joint3d_malformed": 0,
+    "errors": [],
+    "frame_count_summary": {
+      "min": 300,
+      "max": 300,
+      "mean": 300.0,
+      "total_frames_sum": 36900,
+      "le_20": 0
+    },
+    "temp_summary": {
+      "mean_of_means": 13.330777556201305,
+      "min_seen": 0.0,
+      "max_seen": 742.361633
+    },
+    "ambient_summary": {
+      "mean": 19.639457926829266,
+      "min": 15.502062,
+      "max": 22.490997
+    },
+    "hand_depth_summary": {
+      "mean": 0.35780681748997994,
+      "min": 0.17313333849112192,
+      "max": 1.6481429451987857,
+      "p50": 0.3447619208267757,
+      "n_samples": 6150
+    }
+  },
+  {
+    "archive": "Testset",
+    "dir": "data/tapor/Testset",
+    "n_files": 478,
+    "filenames_sample": [
+      "LongData_U1.pkl",
+      "LongData_U2.pkl",
+      "P1_BG_R_X_X_0.pkl",
+      "P1_BG_R_X_X_1.pkl",
+      "P1_U10_L_X_X_0.pkl",
+      "P1_U10_L_X_X_1.pkl",
+      "P1_U10_R_X_X_0.pkl",
+      "P1_U10_R_X_X_1.pkl"
+    ],
+    "all_keys_union": [
+      "label_2d_joints",
+      "label_3d_joints",
+      "label_depth_maps",
+      "label_hand_depth",
+      "thermal_array_ambient_temperatures",
+      "thermal_array_temperature_maps"
+    ],
+    "key_presence": {
+      "thermal_array_temperature_maps": 478,
+      "thermal_array_ambient_temperatures": 478,
+      "label_depth_maps": 478,
+      "label_2d_joints": 478,
+      "label_3d_joints": 478,
+      "label_hand_depth": 478
+    },
+    "samples": [
+      {
+        "file": "LongData_U1.pkl",
+        "keys": [
+          "thermal_array_temperature_maps",
+          "thermal_array_ambient_temperatures",
+          "label_depth_maps",
+          "label_2d_joints",
+          "label_3d_joints",
+          "label_hand_depth"
+        ],
+        "thermal_array_temperature_maps_frames": 1000,
+        "thermal_array_temperature_maps_frame0_shape": [
+          24,
+          32
+        ],
+        "thermal_array_temperature_maps_frame0_dtype": "float64",
+        "thermal_array_temperature_maps_frame0_minmax": [
+          0.0,
+          35.222954
+        ],
+        "thermal_array_ambient_temperatures_frames": 1000,
+        "thermal_array_ambient_temperatures_frame0_shape": [],
+        "thermal_array_ambient_temperatures_frame0_dtype": "float64",
+        "thermal_array_ambient_temperatures_frame0_minmax": [
+          19.545877,
+          19.545877
+        ],
+        "label_depth_maps_frames": 1000,
+        "label_depth_maps_frame0_shape": [
+          120,
+          160
+        ],
+        "label_depth_maps_frame0_dtype": "uint16",
+        "label_depth_maps_frame0_minmax": [
+          0.0,
+          1736.0
+        ],
+        "label_2d_joints_frames": 1000,
+        "label_2d_joints_frame0_shape": [
+          0
+        ],
+        "label_2d_joints_frame0_dtype": "float64",
+        "label_3d_joints_frames": 1000,
+        "label_3d_joints_frame0_shape": [
+          0
+        ],
+        "label_3d_joints_frame0_dtype": "float64",
+        "label_hand_depth_frames": 1000,
+        "label_hand_depth_frame0_shape": [],
+        "label_hand_depth_frame0_dtype": "float64",
+        "label_hand_depth_frame0_minmax": [
+          0.3,
+          0.3
+        ]
+      },
+      {
+        "file": "LongData_U2.pkl",
+        "keys": [
+          "thermal_array_temperature_maps",
+          "thermal_array_ambient_temperatures",
+          "label_depth_maps",
+          "label_2d_joints",
+          "label_3d_joints",
+          "label_hand_depth"
+        ],
+        "thermal_array_temperature_maps_frames": 1000,
+        "thermal_array_temperature_maps_frame0_shape": [
+          24,
+          32
+        ],
+        "thermal_array_temperature_maps_frame0_dtype": "float64",
+        "thermal_array_temperature_maps_frame0_minmax": [
+          0.0,
+          36.855522
+        ],
+        "thermal_array_ambient_temperatures_frames": 1000,
+        "thermal_array_ambient_temperatures_frame0_shape": [],
+        "thermal_array_ambient_temperatures_frame0_dtype": "float64",
+        "thermal_array_ambient_temperatures_frame0_minmax": [
+          19.628571,
+          19.628571
+        ],
+        "label_depth_maps_frames": 1000,
+        "label_depth_maps_frame0_shape": [
+          120,
+          160
+        ],
+        "label_depth_maps_frame0_dtype": "uint16",
+        "label_depth_maps_frame0_minmax": [
+          0.0,
+          1707.0
+        ],
+        "label_2d_joints_frames": 1000,
+        "label_2d_joints_frame0_shape": [
+          21,
+          3
+        ],
+        "label_2d_joints_frame0_dtype": "float64",
+        "label_2d_joints_frame0_minmax": [
+          -0.017554593640704486,
+          1.0304795937944753
+        ],
+        "label_3d_joints_frames": 1000,
+        "label_3d_joints_frame0_shape": [
+          21,
+          3
+        ],
+        "label_3d_joints_frame0_dtype": "float64",
+        "label_3d_joints_frame0_minmax": [
+          -0.05893698406219482,
+          0.27774398803710937
+        ],
+        "label_hand_depth_frames": 1000,
+        "label_hand_depth_frame0_shape": [],
+        "label_hand_depth_frame0_dtype": "float64",
+        "label_hand_depth_frame0_minmax": [
+          1.293583405514558,
+          1.293583405514558
+        ]
+      }
+    ],
+    "gesture_name_counts": {
+      "gesture0": 4,
+      "gesture1": 4,
+      "gesture2": 4,
+      "gesture3": 4,
+      "gesture4": 4,
+      "gesture5": 4,
+      "gesture6": 4
+    },
+    "thermal_shapes": {
+      "[24, 32]": 478
+    },
+    "depth_shapes": {
+      "[120, 160]": 478
+    },
+    "joint3d_valid": 13585,
+    "joint3d_empty": 1551,
+    "joint3d_malformed": 34,
+    "errors": [],
+    "frame_count_summary": {
+      "min": 100,
+      "max": 1000,
+      "mean": 260.2510460251046,
+      "total_frames_sum": 124400,
+      "le_20": 0
+    },
+    "temp_summary": {
+      "mean_of_means": 14.47064674764372,
+      "min_seen": 0.0,
+      "max_seen": 443.756561
+    },
+    "ambient_summary": {
+      "mean": 21.8201420083682,
+      "min": 16.686897,
+      "max": 417.464478
+    },
+    "hand_depth_summary": {
+      "mean": 0.3486667560444849,
+      "min": 0.1620000104109446,
+      "max": 8.514800310134888,
+      "p50": 0.33709525636264254,
+      "n_samples": 23900
+    }
+  },
+  {
+    "archive": "gesture",
+    "dir": "data/tapor/gesture",
+    "n_files": 28,
+    "filenames_sample": [
+      "P1_U1_L_gesture0_0.pkl",
+      "P1_U1_L_gesture1_0.pkl",
+      "P1_U1_L_gesture2_0.pkl",
+      "P1_U1_L_gesture3_0.pkl",
+      "P1_U1_L_gesture4_0.pkl",
+      "P1_U1_L_gesture5_0.pkl",
+      "P1_U1_R_gesture0_0.pkl",
+      "P1_U1_R_gesture1_0.pkl"
+    ],
+    "all_keys_union": [
+      "label_2d_joints",
+      "label_3d_joints",
+      "label_depth_maps",
+      "label_hand_depth",
+      "thermal_array_ambient_temperatures",
+      "thermal_array_temperature_maps"
+    ],
+    "key_presence": {
+      "thermal_array_temperature_maps": 28,
+      "thermal_array_ambient_temperatures": 28,
+      "label_depth_maps": 28,
+      "label_2d_joints": 28,
+      "label_3d_joints": 28,
+      "label_hand_depth": 28
+    },
+    "samples": [
+      {
+        "file": "P1_U1_L_gesture0_0.pkl",
+        "keys": [
+          "thermal_array_temperature_maps",
+          "thermal_array_ambient_temperatures",
+          "label_depth_maps",
+          "label_2d_joints",
+          "label_3d_joints",
+          "label_hand_depth"
+        ],
+        "thermal_array_temperature_maps_frames": 1000,
+        "thermal_array_temperature_maps_frame0_shape": [
+          24,
+          32
+        ],
+        "thermal_array_temperature_maps_frame0_dtype": "float64",
+        "thermal_array_temperature_maps_frame0_minmax": [
+          0.0,
+          35.291466
+        ],
+        "thermal_array_ambient_temperatures_frames": 1000,
+        "thermal_array_ambient_temperatures_frame0_shape": [],
+        "thermal_array_ambient_temperatures_frame0_dtype": "float64",
+        "thermal_array_ambient_temperatures_frame0_minmax": [
+          21.480545,
+          21.480545
+        ],
+        "label_depth_maps_frames": 1000,
+        "label_depth_maps_frame0_shape": [
+          120,
+          160
+        ],
+        "label_depth_maps_frame0_dtype": "uint16",
+        "label_depth_maps_frame0_minmax": [
+          0.0,
+          1717.0
+        ],
+        "label_2d_joints_frames": 1000,
+        "label_2d_joints_frame0_shape": [
+          0
+        ],
+        "label_2d_joints_frame0_dtype": "float64",
+        "label_3d_joints_frames": 1000,
+        "label_3d_joints_frame0_shape": [
+          0
+        ],
+        "label_3d_joints_frame0_dtype": "float64",
+        "label_hand_depth_frames": 1000,
+        "label_hand_depth_frame0_shape": [],
+        "label_hand_depth_frame0_dtype": "float64",
+        "label_hand_depth_frame0_minmax": [
+          0.3,
+          0.3
+        ]
+      },
+      {
+        "file": "P1_U1_L_gesture1_0.pkl",
+        "keys": [
+          "thermal_array_temperature_maps",
+          "thermal_array_ambient_temperatures",
+          "label_depth_maps",
+          "label_2d_joints",
+          "label_3d_joints",
+          "label_hand_depth"
+        ],
+        "thermal_array_temperature_maps_frames": 1000,
+        "thermal_array_temperature_maps_frame0_shape": [
+          24,
+          32
+        ],
+        "thermal_array_temperature_maps_frame0_dtype": "float64",
+        "thermal_array_temperature_maps_frame0_minmax": [
+          0.0,
+          35.686668
+        ],
+        "thermal_array_ambient_temperatures_frames": 1000,
+        "thermal_array_ambient_temperatures_frame0_shape": [],
+        "thermal_array_ambient_temperatures_frame0_dtype": "float64",
+        "thermal_array_ambient_temperatures_frame0_minmax": [
+          21.46257,
+          21.46257
+        ],
+        "label_depth_maps_frames": 1000,
+        "label_depth_maps_frame0_shape": [
+          120,
+          160
+        ],
+        "label_depth_maps_frame0_dtype": "uint16",
+        "label_depth_maps_frame0_minmax": [
+          0.0,
+          1712.0
+        ],
+        "label_2d_joints_frames": 1000,
+        "label_2d_joints_frame0_shape": [
+          0
+        ],
+        "label_2d_joints_frame0_dtype": "float64",
+        "label_3d_joints_frames": 1000,
+        "label_3d_joints_frame0_shape": [
+          0
+        ],
+        "label_3d_joints_frame0_dtype": "float64",
+        "label_hand_depth_frames": 1000,
+        "label_hand_depth_frame0_shape": [],
+        "label_hand_depth_frame0_dtype": "float64",
+        "label_hand_depth_frame0_minmax": [
+          0.3,
+          0.3
+        ]
+      }
+    ],
+    "gesture_name_counts": {
+      "gesture0": 4,
+      "gesture1": 4,
+      "gesture2": 4,
+      "gesture3": 4,
+      "gesture4": 4,
+      "gesture5": 4,
+      "gesture6": 4
+    },
+    "thermal_shapes": {
+      "[24, 32]": 28
+    },
+    "depth_shapes": {
+      "[120, 160]": 28
+    },
+    "joint3d_valid": 661,
+    "joint3d_empty": 207,
+    "joint3d_malformed": 0,
+    "errors": [],
+    "frame_count_summary": {
+      "min": 1000,
+      "max": 1000,
+      "mean": 1000.0,
+      "total_frames_sum": 28000,
+      "le_20": 0
+    },
+    "temp_summary": {
+      "mean_of_means": 13.65497548046875,
+      "min_seen": 0.0,
+      "max_seen": 35.686668
+    },
+    "ambient_summary": {
+      "mean": 21.818162607142856,
+      "min": 17.616945,
+      "max": 23.080368
+    },
+    "hand_depth_summary": {
+      "mean": 0.3572120587185009,
+      "min": 0.17944445378250545,
+      "max": 8.514800310134888,
+      "p50": 0.340142873781068,
+      "n_samples": 1400
+    }
+  }
+]

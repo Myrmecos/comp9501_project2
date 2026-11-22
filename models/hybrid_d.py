@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .common import ConvBNReLU, FiLM, InverseUNet, KPFeatureExtractor, PositionRetrievalDecoder, ResidualConv
-from .forward_thermal import ForwardThermal
+from .forward_thermal import ForwardThermal, apply_forward
 from .physics_utils import ambient_normalize, maybe_detach
 
 
@@ -21,13 +21,16 @@ class HybridD(nn.Module):
         inverse_base=64,
         detach_physics_for_pose=True,
         use_forward=True,
+        use_residual=True,
         **_kwargs,
     ):
         super().__init__()
         self.detach_physics_for_pose = bool(detach_physics_for_pose)
         self.use_forward = bool(use_forward)
         self.inverse = InverseUNet(in_ch=in_ch, base=inverse_base, out_ch=5)
-        self.forward_model = ForwardThermal() if self.use_forward else None
+        self.forward_model = (
+            ForwardThermal(use_residual=bool(use_residual)) if self.use_forward else None
+        )
         self.spatial_builder = nn.Sequential(
             ConvBNReLU(5, 64),
             ResidualConv(64),
@@ -42,11 +45,14 @@ class HybridD(nn.Module):
     def forward(self, thermal, ambient):
         thermal_n = ambient_normalize(thermal, ambient)
         prim = self.inverse(thermal_n)
-        t_recon = None
-        if self.forward_model is not None:
-            t_recon = self.forward_model(
-                prim["depth"], prim["emissivity"], prim["surface_temp"], prim["reflection"], ambient
-            )
+        fwd = apply_forward(
+            self.forward_model,
+            prim["depth"],
+            prim["emissivity"],
+            prim["surface_temp"],
+            prim["reflection"],
+            ambient,
+        )
         mask = torch.sigmoid(prim["mask_logits"])
         d = maybe_detach(prim["depth"], self.detach_physics_for_pose)
         e = maybe_detach(prim["emissivity"], self.detach_physics_for_pose)
@@ -68,7 +74,9 @@ class HybridD(nn.Module):
         return {
             "joints": joints,
             "depth": prim["depth"],
-            "t_recon": t_recon,
+            "t_recon": fwd["t_recon"],
+            "t_phys": fwd["t_phys"],
+            "t_residual": fwd["t_residual"],
             "mask_logits": prim["mask_logits"],
             "emissivity": prim["emissivity"],
             "surface_temp": prim["surface_temp"],
